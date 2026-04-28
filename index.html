@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Escape Room Matemático</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+.bloque {
+  background: #1f2937;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+img {
+  max-width: 100%;
+  border: 4px solid #38bdf8;
+  border-radius: 10px;
+}
+
+.grupo {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+input {
+  width: 45px;
+  padding: 8px;
+  font-size: 18px;
+  text-align: center;
+  border-radius: 6px;
+  border: 3px solid white;
+}
+
+.codigo input {
+  width: 90px;
+}
+
+.correcto {
+  background: #bbf7d0;
+  border-color: #22c55e;
+  color: black;
+}
+
+.incorrecto {
+  background: #fecaca;
+  border-color: #ef4444;
+  color: black;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 20px;
+  font-size: 18px;
+  background: #22c55e;
+  border: none;
+  border-radius: 8px;
+}
+
+.mensaje {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.ok { background: #065f46; }
+.error { background: #7f1d1d; }
+</style>
+</head>
+
+<body>
+
+<h1>Escape Room Matemático</h1>
+
+<div class="bloque">
+<h2>La rebelión de los electrodomésticos</h2>
+<p>
+Los electrodomésticos han sido infectados por un chip maligno.
+Para salvar la humanidad debéis resolver los ejercicios.
+</p>
+<p>
+De cada ejercicio escribid <strong>la cifra que ocupa el lugar de las unidades del resultado </strong>.
+</p>
+<p><strong>⚠️ En el último ejercicio del grupo 4 usa SOLO el área</strong></p>
+</div>
+
+<div class="bloque">
+<h2>Ejercicios</h2>
+<img src="ejercicios.png">
+</div>
+
+<div class="bloque">
+<h2>Introduce los resultados</h2>
+
+<h3>Grupo 1</h3>
+<div class="grupo">
+<input class="g1"><input class="g1"><input class="g1"><input class="g1"><input class="g1">
+</div>
+
+<h3>Grupo 2</h3>
+<div class="grupo">
+<input class="g2"><input class="g2"><input class="g2"><input class="g2"><input class="g2">
+</div>
+
+<h3>Grupo 3</h3>
+<div class="grupo">
+<input class="g3"><input class="g3"><input class="g3"><input class="g3"><input class="g3">
+</div>
+
+<h3>Grupo 4</h3>
+<div class="grupo">
+<input class="g4"><input class="g4"><input class="g4"><input class="g4"><input class="g4">
+</div>
+
+</div>
+
+<div class="bloque codigo">
+<h2>Código final</h2>
+
+Grupo 1: <input id="c1">
+Grupo 2: <input id="c2">
+Grupo 3: <input id="c3">
+Grupo 4: <input id="c4">
+
+<button onclick="comprobar()">Abrir puerta</button>
+
+<div id="ok" class="mensaje ok">
+<h2>🎉 ¡PUERTA ABIERTA!</h2>
+</div>
+
+<div id="error" class="mensaje error">
+<h2>❌ Código incorrecto</h2>
+</div>
+
+</div>
+
+<script>
+const soluciones = {
+  g1: ["9","2","5","5","3"],
+  g2: ["6","6","7","0","3"],
+  g3: ["0","5","2","0","5"],
+  g4: ["0","8","0","4","0"]
+};
+
+function corregirGrupo(clase) {
+  const inputs = document.getElementsByClassName(clase);
+  let codigo = "";
+
+  for (let i = 0; i < inputs.length; i++) {
+    const valor = inputs[i].value.trim();
+    codigo += valor;
+
+    inputs[i].classList.remove("correcto","incorrecto");
+
+    if (valor === soluciones[clase][i]) {
+      inputs[i].classList.add("correcto");
+    } else {
+      inputs[i].classList.add("incorrecto");
+    }
+  }
+  return codigo;
+}
+
+function revisarCodigo(id, correcto) {
+  const input = document.getElementById(id);
+  input.classList.remove("correcto","incorrecto");
+
+  if (input.value === correcto) {
+    input.classList.add("correcto");
+    return true;
+  } else {
+    input.classList.add("incorrecto");
+    return false;
+  }
+}
+
+function comprobar() {
+
+  const c1 = corregirGrupo("g1");
+  const c2 = corregirGrupo("g2");
+  const c3 = corregirGrupo("g3");
+  const c4 = corregirGrupo("g4");
+
+  const ok1 = revisarCodigo("c1", c1);
+  const ok2 = revisarCodigo("c2", c2);
+  const ok3 = revisarCodigo("c3", c3);
+  const ok4 = revisarCodigo("c4", c4);
+
+  if (ok1 && ok2 && ok3 && ok4) {
+    document.getElementById("ok").style.display = "block";
+    document.getElementById("error").style.display = "none";
+  } else {
+    document.getElementById("ok").style.display = "none";
+    document.getElementById("error").style.display = "block";
+  }
+}
+</script>
+
+</body>
+</html>
