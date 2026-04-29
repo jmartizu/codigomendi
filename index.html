@@ -90,7 +90,7 @@ h1, h2, h3 {
 .fuego {
   position: absolute;
   top: 25px;
-  left: 0%;
+  left: 75%;
   font-size: 36px;
   animation: parpadeo 0.4s infinite alternate;
 }
@@ -144,17 +144,6 @@ input {
   background: #fecaca;
   border-color: #ef4444;
   color: black;
-}
-
-button {
-  display: block;
-  margin: 20px auto;
-  padding: 14px 24px;
-  font-size: 20px;
-  background: #22c55e;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
 .mensaje {
@@ -302,13 +291,12 @@ De cada ejercicio escribid <strong>la cifra que ocupa el lugar de las unidades d
 
 <div class="bloque codigo">
 <h2>Código final</h2>
+<p>Cuando todos los códigos estén bien escritos, la puerta se abrirá automáticamente.</p>
 
 Grupo 1: <input id="c1" maxlength="5">
 Grupo 2: <input id="c2" maxlength="5">
 Grupo 3: <input id="c3" maxlength="5">
 Grupo 4: <input id="c4" maxlength="5">
-
-<button onclick="comprobar()">Abrir puerta</button>
 
 <div class="puerta-contenedor" id="puertaContenedor">
   <div class="puerta">
@@ -345,6 +333,7 @@ const soluciones = {
   g4: ["0","8","0","4","0"]
 };
 
+let yaAbierto = false;
 let tiempoTotal = 50 * 60;
 let tiempoRestante = tiempoTotal;
 let intervalo = setInterval(actualizarTiempo, 1000);
@@ -369,63 +358,81 @@ function actualizarTiempo() {
   tiempoRestante--;
 }
 
-function corregirGrupo(clase) {
+function codigoDeGrupo(clase) {
   const inputs = document.getElementsByClassName(clase);
   let codigo = "";
 
   for (let i = 0; i < inputs.length; i++) {
-    const valor = inputs[i].value.trim();
-    codigo += valor;
-
-    inputs[i].classList.remove("correcto","incorrecto");
-
-    if (valor === soluciones[clase][i]) {
-      inputs[i].classList.add("correcto");
-    } else {
-      inputs[i].classList.add("incorrecto");
-    }
+    codigo += inputs[i].value.trim();
   }
+
   return codigo;
 }
 
-function revisarCodigo(id, correcto) {
-  const input = document.getElementById(id);
-  const valor = input.value.trim();
+function marcarInput(input, correcto) {
+  input.classList.remove("correcto", "incorrecto");
 
-  input.classList.remove("correcto","incorrecto");
+  if (input.value.trim() === "") {
+    return;
+  }
 
-  if (valor === correcto) {
+  if (correcto) {
     input.classList.add("correcto");
-    return true;
   } else {
     input.classList.add("incorrecto");
-    return false;
   }
 }
 
-function comprobar() {
-  const c1 = corregirGrupo("g1");
-  const c2 = corregirGrupo("g2");
-  const c3 = corregirGrupo("g3");
-  const c4 = corregirGrupo("g4");
+function comprobarAutomaticamente() {
+  if (yaAbierto) return;
 
-  const ok1 = revisarCodigo("c1", c1);
-  const ok2 = revisarCodigo("c2", c2);
-  const ok3 = revisarCodigo("c3", c3);
-  const ok4 = revisarCodigo("c4", c4);
+  const codigoCorrecto1 = soluciones.g1.join("");
+  const codigoCorrecto2 = soluciones.g2.join("");
+  const codigoCorrecto3 = soluciones.g3.join("");
+  const codigoCorrecto4 = soluciones.g4.join("");
 
-  if (ok1 && ok2 && ok3 && ok4) {
+  const codigoEjercicios1 = codigoDeGrupo("g1");
+  const codigoEjercicios2 = codigoDeGrupo("g2");
+  const codigoEjercicios3 = codigoDeGrupo("g3");
+  const codigoEjercicios4 = codigoDeGrupo("g4");
+
+  const c1 = document.getElementById("c1");
+  const c2 = document.getElementById("c2");
+  const c3 = document.getElementById("c3");
+  const c4 = document.getElementById("c4");
+
+  marcarInput(c1, c1.value.trim() === codigoCorrecto1);
+  marcarInput(c2, c2.value.trim() === codigoCorrecto2);
+  marcarInput(c3, c3.value.trim() === codigoCorrecto3);
+  marcarInput(c4, c4.value.trim() === codigoCorrecto4);
+
+  const todoCorrecto =
+    codigoEjercicios1 === codigoCorrecto1 &&
+    codigoEjercicios2 === codigoCorrecto2 &&
+    codigoEjercicios3 === codigoCorrecto3 &&
+    codigoEjercicios4 === codigoCorrecto4 &&
+    c1.value.trim() === codigoCorrecto1 &&
+    c2.value.trim() === codigoCorrecto2 &&
+    c3.value.trim() === codigoCorrecto3 &&
+    c4.value.trim() === codigoCorrecto4;
+
+  if (todoCorrecto) {
+    yaAbierto = true;
     clearInterval(intervalo);
+
     document.getElementById("ok").style.display = "block";
     document.getElementById("error").style.display = "none";
     document.getElementById("puertaContenedor").style.display = "block";
+
     document.getElementById("victoria").play();
-  } else {
-    document.getElementById("ok").style.display = "none";
-    document.getElementById("error").style.display = "block";
-    document.getElementById("fallo").play();
   }
 }
+
+const todosLosInputs = document.querySelectorAll("input");
+
+todosLosInputs.forEach(input => {
+  input.addEventListener("input", comprobarAutomaticamente);
+});
 </script>
 
 </body>
